@@ -7,12 +7,17 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-       - image: circleci/ruby:2.4.4-node-browsers
-
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
+      - image: circleci/ruby:2.4.4-node-browsers
+        environment:
+          RAILS_ENV: test
+      - image: circleci/mysql:5.6-ram
+        environment:
+          MYSQL_USER: root
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
 
     working_directory: ~/repo
 
@@ -36,22 +41,33 @@ jobs:
             - ./vendor/bundle
           key: v1-dependencies-{{ checksum "Gemfile.lock" }}
 
+      # - run:
+      #     name: Wait for DB
+      #     # preinstalled in circleci/* docker image
+      #     command: dockerize -wait tcp://127.0.0.1:3306 -timeout 120s
+      # - run:
+      #     name: MySQL version
+      #     command: bundle exec ruby mysql_version.rb
+
       # Database setup
       - run: bundle exec rake db:create
       - run: bundle exec rake db:schema:load
 
+      # - run: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+
       # run tests!
       - run:
           name: run tests
-          command: |
-            mkdir /tmp/test-results
-            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
-
-            bundle exec rspec --format progress \
-                            --format RspecJunitFormatter \
-                            --out /tmp/test-results/rspec.xml \
-                            --format progress \
-                            $TEST_FILES
+          command: bundle exec rspec -f progress -f RspecJunitFormatter -o /tmp/test-results/rspec.xml
+          # command: |
+          #   mkdir /tmp/test-results
+          #   TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
+          #
+          #   bundle exec rspec --format progress \
+          #                   --format RspecJunitFormatter \
+          #                   --out /tmp/test-results/rspec.xml \
+          #                   --format progress \
+          #                   $TEST_FILES
 
       # collect reports
       - store_test_results:
