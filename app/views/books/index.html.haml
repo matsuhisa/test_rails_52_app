@@ -13,7 +13,10 @@
   %tbody
     - @books.each do |book|
       %tr
-        %td= book.title
+        %td
+          - if book.new_arrivals?
+            .new 新着！
+          = book.title
         %td= book.price
         %td= book.description
         %td= link_to 'Show', book
