@@ -17,7 +17,6 @@ test:
   username: root
   password:
 
-
 production:
   <<: *default
   database: 'application'
