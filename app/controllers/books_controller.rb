@@ -25,10 +25,8 @@ class BooksController < ApplicationController
   # POST /books.json
   def create
     @book = Book.new(book_params)
-    book_and_notifier = BookAndNotifier.new(@book)
-
     respond_to do |format|
-      if book_and_notifier.save
+      if @book.save
         format.html { redirect_to @book, notice: 'Book was successfully created.' }
         format.json { render :show, status: :created, location: @book }
       else
@@ -36,6 +34,17 @@ class BooksController < ApplicationController
         format.json { render json: @book.errors, status: :unprocessable_entity }
       end
     end
+    # book_and_notifier = BookAndNotifier.new(@book)
+
+    # respond_to do |format|
+    #   if book_and_notifier.save
+    #     format.html { redirect_to @book, notice: 'Book was successfully created.' }
+    #     format.json { render :show, status: :created, location: @book }
+    #   else
+    #     format.html { render :new }
+    #     format.json { render json: @book.errors, status: :unprocessable_entity }
+    #   end
+    # end
   end
 
   # PATCH/PUT /books/1
