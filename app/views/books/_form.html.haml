@@ -1,4 +1,4 @@
-= form_with model: @book do |f|
+= form_with model: @book, builder: LabellingFormBuilder do |f|
   - if @book.errors.any?
     #error_explanation
       %h2= "#{pluralize(@book.errors.count, "error")} prohibited this book from being saved:"
@@ -8,10 +8,13 @@
 
   .field
     = f.label :title
-    = f.label :title do
-      = :title
-      %span span要素
+    -# = f.label :title do
+    -#   = :title
+    -#   %span span要素
     = f.text_field :title
+
+    = f.span :title, class: "foo"
+    = f.span :price, class: "foo-price", data: { foo: "foo", controller: "bar" }
   .field
     = f.label :price
     = f.number_field :price
