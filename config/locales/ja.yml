@@ -1,0 +1,5 @@
+ja:
+  activerecord:
+    attributes:
+      book:
+        title: "書名"
